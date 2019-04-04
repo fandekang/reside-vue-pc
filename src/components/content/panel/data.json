@@ -1,0 +1,79 @@
+{
+  "localData": [{
+    "title": "新闻1",
+    "bodyText": "国家主席习近平22日下午在人民大会堂北大厅举行仪式，欢迎喀麦隆总统保罗·比亚对我国进行国事访问。天安门广场上鸣礼炮21响。习近平主席夫人彭丽媛，中共中央政治局委员杨洁篪，全国人大常委会副委员长沈跃跃，国务委员兼外交部部长王毅，全国政协副主席张庆黎、何立峰等出席欢迎仪式。",
+    "original": "true",
+    "pubdate": "2018-03-23",
+    "commentcount": "1234",
+    "viewcount": "567"
+  }, {
+    "title": "新闻2",
+    "bodyText": "国家主席习近平22日下午在人民大会堂北大厅举行仪式，欢迎喀麦隆总统保罗·比亚对我国进行国事访问。天安门广场上鸣礼炮21响。习近平主席夫人彭丽媛，中共中央政治局委员杨洁篪，全国人大常委会副委员长沈跃跃，国务委员兼外交部部长王毅，全国政协副主席张庆黎、何立峰等出席欢迎仪式。",
+    "original": "false",
+    "pubdate": "2018-03-23",
+    "commentcount": "789",
+    "viewcount": "666"
+  }],
+  "responseData": {
+    "resultMsg": null,
+    "resultCode": null,
+    "result": {
+      "total": 10,
+      "list": [{
+        "title": "新闻1",
+        "bodyText": "在智能终端和移动互联网技术普及的社会大背景下,越来越多人使用移动端获取新闻资讯成为不可逆的趋势。2018年3月21日,iiMedia Research",
+        "original": false,
+        "pubdate": "2018-03-23 18:15:04",
+        "viewcount": 1234,
+        "commentcount": 789
+      }, {
+        "title": "新闻2",
+        "bodyText": "在智能终端和移动互联网技术普及的社会大背景下,越来越多人使用移动端获取新闻资讯成为不可逆的趋势。2018年3月21日,iiMedia Research",
+        "original": true,
+        "pubdate": "2018-03-23 18:15:04",
+        "viewcount": 1234,
+        "commentcount": 789
+      }]
+    },
+    "success": true
+  },
+  "AttrHeadList": ["参数", "说明", "类型", "可选值", "默认值"],
+  "AttrList": [
+    [
+      "width", "宽度", "string", "—", "100%"
+    ],
+    [
+      "height", "高度", "string", "—", "250px(最小高度100px)"
+    ],
+    [
+      "data-json(这是panelList的属性)", "本地json数据", "string", "—", "—"
+    ],
+    [
+      "data-url(这是panelList的属性)", "远程地址,将返回的数据显示到导航中", "string", "—", "—"
+    ],
+    [
+      "background-color", "背景色", "string", "—", "#ffffff"
+    ],
+    [
+      "headerHeight", "标题部分高度", "string", "—", "40px"
+    ],
+    [
+      "bordered", "是否有边框线", "boolean", "—", "true"
+    ],
+    [
+      "headerBgColor", "标题部分背景色", "string", "—", "#F8F8F8"
+    ],
+    [
+      "headerTextColor", "标题文字颜色", "string", "—", "#000"
+    ],
+    [
+      "radius", "是否圆角", "boolean", "—", "false"
+    ],
+    [
+      "shadow", "是否带阴影效果", "boolean", "—", "false"
+    ],
+    [
+      "innerBordered", "是否有内框线", "boolean", "—", "false"
+    ]
+  ]
+}
