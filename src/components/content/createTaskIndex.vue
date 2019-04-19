@@ -1,12 +1,12 @@
 <template>
-  <el-container class="112">
+  <el-container>
     <el-header>
       <span class="operate-wrapper">
         <button class="btn disabled" ref="prev" @click="lastStep()">上一步</button>
         <button class="btn" ref="next" @click="nextStep()">下一步</button>
-        <button class="btn hidden" ref="finished">创建流程</button>
+        <button class="btn hidden" ref="finished" @click="finish()">创建流程</button>
       </span>
-      <span class="sercch-wrapper">
+      <span class="search-wrapper">
         <el-dropdown @command="select">
           <span class="el-dropdown-link">
             {{selectItem.text}}
@@ -27,17 +27,17 @@
       </span>
     </el-header>
     <el-main>
-      <router-view></router-view>
+      <router-view ref="step" @closeDialog="closeDialog"></router-view>
     </el-main>
   </el-container>
 </template>
 <script>
 export default {
-  props: {
-    selRowDataStr: {
-      type: Object
-    }
-  },
+  // props: {
+  //   selRowDataStr: {
+  //     type: Object
+  //   }
+  // },
   data() {
     return {
       searchVal: "",
@@ -45,6 +45,9 @@ export default {
     };
   },
   computed: {
+    selRowDataStr() {
+      return this.$store.state.moduleHead.selRowDataJSON;
+    },
     controlButtonArr: {
       get() {
         return this.$store.state.moduleHead.controlButton;
@@ -67,7 +70,7 @@ export default {
   watch: {
     // 每一步骤先清空文本框数据
     pageIndex(newVal, oldVal) {
-        this.searchVal = "";
+      this.searchVal = "";
     }
   },
   created() {},
@@ -93,23 +96,53 @@ export default {
       }
     },
     nextStep() {
-      if (
-        this.pageIndex >= 0 &&
-        this.pageIndex < this.selRowDataStr.pathArr.length
-      ) {
-        this.pageIndex++;
-        this.$refs.prev.className = "btn";
-        // console.log(this.pageIndex);
-        this.$router.push(this.selRowDataStr.pathArr[this.pageIndex]);
-      }
+      // this.$refs.step.$refs.buyer.__vue__.next();
+      console.log(this.$refs)
+      let selRow = this.$refs.step.next();
+      // let selRow = this.$refs.step.$refs.stepItem.__vue__.next();
+      // alert(selRow)
+      // console.log(selRow)
 
-      if (this.pageIndex === this.selRowDataStr.pathArr.length - 1) {
-        this.$refs.next.className = "hidden";
-        this.$refs.finished.className = "btn";
+      if (selRow.indexOf("{") < 0 && selRow.indexOf("[") < 0) {
+        this.$message.error(selRow)
+      } else {
+        let selRowDataJSON = JSON.parse(selRow)
+        this.$store.commit('changeSelRow', {selRowDataJSON: selRowDataJSON})
+        if (
+          this.pageIndex >= 0 &&
+          this.pageIndex < this.selRowDataStr.pathArr.length
+        ) {
+          this.pageIndex++;
+          // console.log(this.pageIndex);
+          this.$refs.prev.className = "btn";
+          this.$router.push(this.selRowDataStr.pathArr[this.pageIndex]);
+        }
+
+        if (this.pageIndex === this.selRowDataStr.pathArr.length - 1) {
+          this.$refs.next.className = "hidden";
+          this.$refs.finished.className = "btn";
+        }
       }
     },
+    finish() {
+      this.$refs.step.finish();
+    },
     search() {
-      alert(this.selectItem.field + ": " + this.searchVal);
+      // alert(this.selectItem.field + ": " + this.searchVal);
+      if (this.searchVal.replace(/^\s+|\s+$/g, "") != "") {
+        let selectValArr = this.selectItem.field.split(".");
+        let a = {};
+        let b = selectValArr[1];
+        let queryParams = {};
+
+        a[b] = this.searchVal;
+        queryParams[selectValArr[0]] = JSON.stringify(a);
+        // console.log(queryParams)
+        // console.log(this.$refs)
+        this.$refs.step.load(queryParams);
+      } else {
+        this.$message.error("请输入要查询的值");
+      }
     },
     select(item) {
       // alert(JSON.stringify(item))
@@ -117,6 +150,9 @@ export default {
       this.$store.commit("changeSelectControlButton", {
         selectControlButton: item
       });
+    },
+    closeDialog() {
+      this.$emit('closeDialog')
     }
   }
 };
@@ -151,7 +187,7 @@ export default {
       background: rgba(226, 226, 226, 1);
     }
   }
-  .sercch-wrapper {
+  .search-wrapper {
     display: flex;
     align-content: center;
     font-size: 0;

@@ -7,6 +7,7 @@ module.exports = {
   },
   env: {
     browser: true,
+    jquery: true
   },
   extends: [
     // https://github.com/vuejs/eslint-plugin-vue#priority-a-essential-error-prevention
@@ -39,5 +40,7 @@ module.exports = {
     "brace-style": [0],
     "no-trailing-spaces": [0],
     "spaced-comment": [0], // 注释空白格
+    "eqeqeq": [0],
+    "camelcase": [0]
   }
 }

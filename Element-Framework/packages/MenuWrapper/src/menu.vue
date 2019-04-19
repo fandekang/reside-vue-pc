@@ -5,7 +5,7 @@
         <span v-html="title"></span>
       </div>
     </div>
-    <el-menu :default-active="defaultActive" :mode="mode" :background-color="backgroundColor"
+    <el-menu ref="menuWrapper" :default-active="defaultActive" :mode="mode" :background-color="backgroundColor"
              :text-color="textColor" :active-text-color="activeTextColor" @select="handleSelect"
              :router="router" :menu-trigger="menuTrigger" :default-openeds="defaultOpeneds" :unique-opened="uniqueOpened"
              :collapse="collapse" @open="handleOpen" @close="handleClose"
@@ -21,12 +21,12 @@
           <span>{{item.text}}</span>
         </el-menu-item>
         <template v-else>
-          <el-submenu :index="item.id" :key="item.id">
+          <el-submenu :index="item.id.toString()" :key="item.id">
             <template slot="title">
               <i :class="item.icon"></i>
               <span>{{item.text}}</span>
             </template>
-            <el-menu-item v-for="child in item.children" :key="child.id" :index="child.id">
+            <el-menu-item v-for="child in item.children" :key="child.id" :index="child.attributes.url" @click="itemTap(child.text)">
               <i :class="child.icon"></i>
               <span>{{child.text}}</span>
             </el-menu-item>
@@ -91,14 +91,18 @@ export default {
     };
   },
   methods: {
-    handleSelect() {
-      this.$emit("select");
+    handleSelect(index, indexPath) {
+      this.$emit("select", index, indexPath);
     },
     handleOpen(index) {
       this.$emit("open");
     },
     handleClose(index) {
       this.$emit("close");
+    },
+    // 点击二级菜单项, 返回该项文本内容
+    itemTap(text) {
+      this.$emit('tap', text)
     }
   }
 };

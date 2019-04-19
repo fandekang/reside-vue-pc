@@ -6,10 +6,11 @@ import ElWrapper from "../Element-Framework";
 import "element-ui/lib/theme-chalk/index.css";
 import router from "./router";
 import resource from 'vue-resource';
+import 'jquery';
+
+import 'font-awesome/css/font-awesome.css';
 
 import moduleHead from '@/assets/js/store/moduleHead';
-import moduleLogin from '@/assets/js/store/moduleLogin';
-import moduleDialog from '@/assets/js/store/moduleDialog';
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
@@ -19,8 +20,6 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   modules: {
-    moduleLogin,
-    moduleDialog,
     moduleHead
   }
 })
@@ -34,6 +33,7 @@ new Vue({
   template: "<App/>"
 });
 
+// 路由 过滤器
 // router.beforeEach((to, from, next) => {
 //   this.$http.get(process.env.ROOT_API + 'login/getLoginName')
 //   .then(res => {

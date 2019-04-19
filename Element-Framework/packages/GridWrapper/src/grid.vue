@@ -75,6 +75,20 @@
               </template>
             </el-table-column>
           </template>
+          <template v-else-if="column.formatter != undefined">
+            <el-table-column
+              :key="index"
+              :prop="column.prop"
+              :label="column.label"
+              :width="column.width"
+              :fixed="column.fixed"
+            >
+              
+              <template slot-scope="scope">
+                <span>{{column.formatter.call(this, scope.row[column.prop])}}</span>
+              </template>
+            </el-table-column>
+          </template>
           <template v-else-if="column.type == 'selection'">
             <el-table-column
               :key="index"
@@ -100,7 +114,7 @@
               :width="column.width"
               :fixed="column.fixed"
             ></el-table-column>
-          </template> -->
+          </template>-->
         </template>
       </template>
       <template v-else>
@@ -132,6 +146,14 @@ export default {
       source: [],
       loading: false
     };
+  },
+  watch: {
+    dataUrl() {
+      this.loadData();
+    },
+    dataJson() {
+      this.loadData();
+    }
   },
   methods: {
     /***

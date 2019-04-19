@@ -1,22 +1,25 @@
 <template>
   <div>
-    <el-dialog
+    <template v-if="createTaskDialogVisible">
+      <el-dialog
         custom-class="create-task-dialog"
         :title="dialogTitle"
         :visible.sync="createTaskDialogVisible"
         width="80%"
         :close-on-click-modal="false"
         :before-close="handleClose"
-    >
-      <createTaskIndex v-if="createTaskDialogVisible" :selRowDataStr="selRowDataStr"></createTaskIndex>
-    </el-dialog>
+      >
+        <createTaskIndex @closeDialog="closeDialog"></createTaskIndex>
+      </el-dialog>
+    </template>
+
     <section class="container-wrapper">
       <div class="list-wrapper">
-        <template v-for="item in authList">
+        <template v-for="(item, index) in authList">
           <div
             class="item"
-            :key="item.procID"
-            @click="tap(item.procID, item.actID, item.busiessName)"
+            :key="index"
+            @click="tap(item.procID, item.busiessName)"
           >{{item.busiessName}}</div>
         </template>
       </div>
@@ -27,110 +30,111 @@
 import createTaskIndex from "@/components/content/createTaskIndex";
 
 export default {
-  name: "taskCreate",
   components: { createTaskIndex },
   data() {
     return {
+      createTaskDialogVisible: false,
       procID: "",
-      actID: "",
-      selRowDataStr: "",
-      dialogTitle: "居住证办理一申请人",
-      authList: [
-        { procID: 1, actID: 1, busiessName: "居住证首次登记" },
-        { procID: 2, actID: 2, busiessName: "居住证转移登记" },
-        { procID: 3, actID: 3, busiessName: "居住证变更登记" }
-      ]
+      authList: []
     };
   },
+  created() {
+    this.getAuthList();
+  },
   computed: {
-    createTaskDialogVisible: {
-      get() {
-        return this.$store.state.moduleDialog.createTaskDialogVisible;
-      },
-      set(visible) {
-        this.$store.commit("toggleCreateTaskDialog", {
-          createTaskDialogVisible: visible
-        });
-      }
+    dialogTitle() {
+      return this.$store.state.moduleHead.createTaskStepTitle;
     }
   },
   methods: {
     handleClose() {
-        this.$store.commit("toggleCreateTaskDialog", {
-          createTaskDialogVisible: false
-        });
+      this.createTaskDialogVisible = false;
     },
-    tap(procID, actID, processName) {
-      let selRowDataJSON = {
-        task: {
-          procID: 1,
-          serialNO: 0,
-          processName: '居住证办理'
+    tap(procID, processName) {
+      let jsonObj = {
+          task: {
+            procID: procID
+          }
         },
-        pathArr: [
-            '/buyer',
-            '/seller',
-            '/houseroom',
-            '/createsummary'
-        ],
-        pageNameArr: ["申请人", "户主", "房屋", "汇总"],
-        pageCheckArr: ["", "", ""]
-      };
-    //   this.selRowDataStr = JSON.stringify(selRowDataJSON);
-      this.selRowDataStr = selRowDataJSON;
-      this.$store.commit("toggleCreateTaskDialog", {
-        createTaskDialogVisible: true
-      });
-      //   let jsonObj = {
-      //       task: {
-      //         procID: procID
-      //       }
-      //     },
-      //     jsonStr = JSON.stringify(jsonObj),
-      //     pathArr = [],
-      //     pageNameArr = [],
-      //     pageCheckArr = [];
+        jsonStr = JSON.stringify(jsonObj),
+        pathArr = [],
+        pageNameArr = [],
+        pageCheckArr = [];
 
-      //   this.$http
-      //     .post(process.env.ROOT_API + "guide/getFormList", { jsonStr: jsonStr })
-      //     .then(
-      //       res => {
-      //         if (res.success) {
-      //           res.data.map(item => {
-      //             pageNameArr.push(item.pageName);
-      //             pathArr.push(item.pagePath);
-      //             pageCheckArr.push(item.checkValidRule);
-      //           });
+      this.$http
+        .post(
+          process.env.ROOT_API + "guide/getFormList",
+          { jsonStr: jsonStr },
+          { emulateJSON: true }
+        )
+        .then(
+          res => {
+            res = JSON.parse(res.bodyText);
+            if (res.success) {
+              res.data.forEach(item => {
+                pageNameArr.push(item.pageName);
+                pathArr.push("/" + item.pagePath.slice(0, -5));
+                pageCheckArr.push(item.checkValidRule);
+              });
 
-      //           let selRowDataJSON = {
-      //             task: {
-      //               procID: procID,
-      //               serialNO: 0,
-      //               processName: processName
-      //             },
-      //             pathArr: pathArr,
-      //             pageNameArr: pageNameArr,
-      //             pageCheckArr: pageCheckArr
-      //           };
-      //           this.selRowDataStr = JSON.stringify(selRowDataJSON);
-      //         } else {
-      //             this.$message({
-      //                 type: 'error',
-      //                 message: '创建失败'
-      //             })
-      //         }
-      //       },
-      //       err => {
-      //           throw new Error(err)
-      //       }
-      //     );
+              let selRowDataJSON = {
+                task: {
+                  procID: procID,
+                  serialNO: 0,
+                  processName: processName
+                },
+                pathArr: pathArr,
+                pageNameArr: pageNameArr,
+                pageCheckArr: pageCheckArr
+              };
+              this.createTaskDialogVisible = true;
+              this.$store.commit("changeSelRow", {
+                selRowDataJSON: selRowDataJSON
+              });
+              // this.selRowDataStr = selRowDataJSON;
+            } else {
+              this.$message({
+                type: "error",
+                message: "创建失败"
+              });
+            }
+          },
+          err => {
+            this.$message({
+              type: "error",
+              message: "创建失败"
+            });
+            throw new Error(err);
+          }
+        );
+    },
+    // 获取任务流程列表
+    getAuthList() {
+      this.$http.get(process.env.ROOT_API + "auth/getAuthList.do").then(
+        res => {
+          res = JSON.parse(res.bodyText);
+          if (res.success) {
+            this.authList = res.data;
+          }
+        },
+        err => {
+          this.$message.error("获取任务流程列表失败");
+          throw new Error(err);
+        }
+      );
+    },
+    closeDialog() {
+      this.handleClose();
+      this.$store.commit("changeMenuItemName", { menuItemName: "正在办理" });
+      this.$emit("defaultActive");
+      this.$router.push("/task-processing?actType=2");
     }
   }
 };
 </script>
 <style>
 .create-task-dialog {
-    height: 75%;
+  height: 600px;
 }
 </style>
 

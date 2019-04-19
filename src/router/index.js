@@ -4,11 +4,17 @@ import Router from "vue-router";
 
 import TaskCreate from '@/components/content/taskCreate';
 import TaskProcessing from '@/components/content/TaskProcessing';
+import TaskReceive from '@/components/content/TaskReceive';
 
 import handleWrite from '@/components/content/handleCase/write';
+import handleView from '@/components/content/handleCase/view';
 
 import writeApply from '@/components/content/handleCase/write/apply'
 import writeMaterial from '@/components/content/handleCase/write/material'
+
+import viewApply from '@/components/content/handleCase/view/apply-info'
+import viewMaterial from '@/components/content/handleCase/view/material'
+import viewPrint from '@/components/content/handleCase/view/print'
 
 import buyer from "@/components/content/create-task-guide/buyer";
 import seller from "@/components/content/create-task-guide/seller";
@@ -27,22 +33,22 @@ export default new Router({
             component: TaskCreate,
             children: [
                 {
-                    path: "/buyer",
+                    path: "/selectbuyer",
                     name: 'buyer',
                     component: buyer
                 },
                 {
-                    path: "/seller",
+                    path: "/selectseller",
                     name: 'seller',
                     component: seller
                 },
                 {
-                    path: "/houseroom",
+                    path: "/selectroom",
                     name: 'houseroom',
                     component: houseroom
                 },
                 {
-                    path: "/createsummary",
+                    path: "/createTask",
                     name: "createsummary",
                     component: createsummary
                 }
@@ -53,6 +59,11 @@ export default new Router({
             name: "TaskProcessing",
             component: TaskProcessing
 
+        },
+        {
+            path: "/task-receive",
+            name: "TaskReceive",
+            component: TaskReceive
         },
         {
             path: "/handleWrite",
@@ -71,6 +82,29 @@ export default new Router({
                     component: writeMaterial
                 }
             ]
+        },
+        {
+            path: "/handleView",
+            redirect: "/viewApply",
+            name: "handleView",
+            component: handleView,
+            children: [
+                {
+                    path: "/viewApply",
+                    name: "viewApply",
+                    component: viewApply
+                },
+                {
+                    path: "/viewMaterial",
+                    name: "viewMaterial",
+                    component: viewMaterial
+                },
+                {
+                    path: "/viewPrint",
+                    name: "viewPrint",
+                    component: viewPrint  
+                }
+            ]  
         }
     ]
 });

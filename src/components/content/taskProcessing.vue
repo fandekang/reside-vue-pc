@@ -1,33 +1,39 @@
 <template>
   <div>
     <router-view></router-view>
-    <template v-if="dialogVisible">
+    <template v-if="skipDialogVisible">
       <el-dialog
         custom-class="custom-dialog"
         title="转件"
-        :visible.sync="dialogVisible"
-        width="40%"
+        :visible.sync="skipDialogVisible"
+        width="30%"
         :close-on-click-modal="false"
         :before-close="beforeCloseEvent"
       >
-        <div class="111">11111</div>
-        <div class="222">22222222</div>
+        <skip-case :data="selectData" @refresh="skipRefresh"></skip-case>
       </el-dialog>
     </template>
     <div class="row">
       <div class="btns-wrapper">
-        <button class="btn" @click="skip">转件</button>
-        <button class="btn">退件</button>
-        <button class="btn">撤件</button>
+        <button class="btn" @click="skipCase">转件</button>
+        <button class="btn" @click="backCase">退件</button>
+        <button class="btn" @click="cancelCase">撤件</button>
       </div>
       <div class="search-wrapper">
-        <input type="text" class="input" v-model="searchVal" @keyup.enter="search">
+        <input
+          type="text"
+          class="input"
+          v-model="searchVal"
+          @keyup.enter="search"
+          placeholder="请输入案件号搜索"
+        >
         <button class="btn" @click="search">搜索</button>
       </div>
     </div>
     <grid-wrapper
       ref="multipleTable"
-      :data-json="localData"
+      height="350"
+      :data-url="url"
       :columns="columns"
       :pager="pager"
       @select="check"
@@ -36,15 +42,18 @@
   </div>
 </template>
 <script>
-import localData from "@/components/content/data";
-import Write from "@/components/content/handleCase/write";
+import skipCase from "@/components/content/skipCase/skipCase";
 
 export default {
   components: {
-    Write
+    skipCase
   },
   data() {
     return {
+      url:
+        process.env.ROOT_API +
+        "task/getTaskList?actType=" +
+        this.$route.query.actType,
       columns: [
         {
           type: "selection",
@@ -52,8 +61,26 @@ export default {
           fixed: "left"
         },
         {
+          prop: "procID",
+          label: "procID",
+          width: "100",
+          hidden: true
+        },
+        {
           prop: "actID",
-          label: "流程名称",
+          label: "actID",
+          width: "100",
+          hidden: true
+        },
+        {
+          prop: "procInstanceID",
+          label: "procInstanceID",
+          width: "100",
+          hidden: true
+        },
+        {
+          prop: "taskID",
+          label: "taskID",
           width: "100",
           hidden: true
         },
@@ -71,7 +98,7 @@ export default {
         {
           prop: "serialNO",
           label: "案件编号",
-          width: "200"
+          width: "150"
           // hidden: true
         },
         {
@@ -103,57 +130,203 @@ export default {
           ]
         }
       ],
-      localData: localData.localData,
       pager: {
+        curPage: 1,
         pageSizes: [5],
         pageSize: 5
       },
       searchVal: "",
-      selectData: {},
-      dialogVisible: false,
+      selectData: [],
+      skipDialogVisible: false
       // dialogTitle: ""
     };
   },
+  mounted() {
+    // this.actType = this.$route.query.actType
+    // console.log(this.$route);
+  },
   methods: {
-    checkAll() {
-      this.$message.error("只能选中一条数据");
-      this.$refs.multipleTable.$refs.elTable.clearSelection();
+    // 转件成功后刷新
+    skipRefresh() {
+      this.url =
+        process.env.ROOT_API +
+        "task/getTaskList?actType=" +
+        this.$route.query.actType +
+        "&random=" +
+        Math.random();
+      this.beforeCloseEvent();
+    },
+    checkAll(selection) {
+      this.selectData = selection;
+      // this.$refs.multipleTable.$refs.elTable.clearSelection();
     },
     check(selection, row) {
-      // console.log(selection)
-      // console.log(row)
-      if (selection.length > 1) {
-        this.$message.error("只能选中一条数据");
-        this.$refs.multipleTable.$refs.elTable.clearSelection();
-      } else {
-        this.selectData = row;
-      }
+      this.selectData = selection;
     },
     // 点击搜索按钮
-    search() {},
-    // 点击行操作中的办理
+    search() {
+      let searchVal = this.searchVal,
+        searchFields = JSON.stringify(["serialNO"]);
+      this.url =
+        process.env.ROOT_API +
+        "task/getTaskList?actType=" +
+        this.$route.query.actType +
+        "&searchFields=" +
+        searchFields +
+        "&searchVal=" +
+        searchVal;
+    },
+    // 点击行操作中的办理按钮
     handleEvent(row) {
-      // alert(JSON.stringify(row));
-      this.selectData = row;
-      this.dialogVisible = true;
-      this.$router.push('/handleWrite')
+      if (row.actID == 7 || row.actID == 19) {
+        this.$router.push({
+          path: "/handleWrite",
+          query: {
+            actID: row.actID,
+            serialNO: row.serialNO
+          }
+        });
+      } else if (row.actID == 8 || row.actID == 21) {
+        // alert('缮证')
+        this.$router.push({
+          path: "/handleView",
+          query: {
+            actID: row.actID,
+            serialNO: row.serialNO
+          }
+        });
+      }
     },
     // 弹出框自定义关闭事件
     beforeCloseEvent() {
-      this.dialogVisible = false;
+      this.skipDialogVisible = false;
     },
     // 转件
-    skip() {
-      this.dialogVisible = true
+    skipCase() {
+      if (this.selectData.length) {
+        this.selectData.forEach(item => {
+          if (item.actID == 7 || item.actID == 19) {
+            this.skipDialogVisible = true;
+          } else {
+            this.$message.error("该环节不能办理转件");
+          }
+        });
+      } else {
+        this.$message.error("请选择一条或多条");
+      }
+    },
+    // 退件
+    backCase() {
+      if (this.selectData.length) {
+        if (this.selectData.length > 1) {
+          this.$message.error("只能选择一条");
+        } else {
+          let res = this.selectData.every(
+            item => item.actID == 7 || item.actID == 19
+          );
+
+          if (res) {
+            this.$message.error("该环节不能办理退件");
+          } else {
+            let arr = [];
+            this.selectData.forEach(item => {
+              let obj = {
+                procID: item.procID,
+                type: "BackTask",
+                taskID: item.taskID,
+                procInstanceID: item.procInstanceID
+              };
+              arr.push(obj);
+            });
+
+            this.$http
+              .post(
+                process.env.ROOT_API + "task/changeTask",
+                { taskListString: JSON.stringify(arr) },
+                { emulateJSON: true }
+              )
+              .then(
+                res => {
+                  res = JSON.parse(res.bodyText);
+                  if (res.success) {
+                    this.$message({ type: "success", message: "退件成功" });
+                    this.url =
+                      process.env.ROOT_API +
+                      "task/getTaskList?actType=" +
+                      this.$route.query.actType +
+                      "&random=" +
+                      Math.random();
+                  } else {
+                    this.$message.error("退件失败");
+                  }
+                },
+                err => {
+                  this.$message.error("退件失败");
+                  throw new Error(err);
+                }
+              );
+          }
+        }
+      } else {
+        this.$message.error("请选择一条");
+      }
+
+      // if (row.actID == 8 || row.actID == 21) {
+      //   // alert('缮证')
+
+      // }
+    },
+    // 撤件
+    cancelCase() {
+      let arr = [];
+      if (this.selectData.length) {
+        this.selectData.forEach(item => {
+          let obj = {
+            procID: item.procID,
+            serialNO: item.serialNO,
+            type: "UnRegistApp",
+            taskID: item.taskID,
+            actID: item.actID,
+            procInstanceID: item.procInstanceID
+          };
+          arr.push(obj);
+        });
+
+        this.$http
+          .post(
+            process.env.ROOT_API + "task/changeTask",
+            { taskListString: JSON.stringify(arr) },
+            { emulateJSON: true }
+          )
+          .then(
+            res => {
+              res = JSON.parse(res.bodyText);
+              if (res.success) {
+                this.$message({ type: "success", message: "撤件成功" });
+                this.url =
+                  process.env.ROOT_API +
+                  "task/getTaskList?actType=" +
+                  this.$route.query.actType +
+                  "&random=" +
+                  Math.random();
+              } else {
+                this.$message.error("撤件失败");
+              }
+            },
+            err => {
+              this.$message.error("撤件失败");
+              throw new Error(err);
+            }
+          );
+      } else {
+        this.$message.error("请选择一条或多条");
+      }
     }
   }
 };
 </script>
 
-<style>
-/* .el-dialog__wrapper .el-dialog {
-  height: 35% !important;
-} */
+<style scoped>
 .custom-dialog {
   height: 50% !important;
 }

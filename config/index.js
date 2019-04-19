@@ -12,7 +12,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/ResideServer/*' : {
-        target: 'http://192.168.1.125:8080',
+        target: 'http://192.168.1.125:8081',
         secure: false,
         changeOrigin: true,
       }
@@ -21,7 +21,7 @@ module.exports = {
     // Various Dev Server settings
     // host: '192.168.1.126',
     host: 'localhost', // can be overwritten by process.env.HOST
-    port: 8082, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+    port: 8085, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,
     notifyOnErrors: true,
@@ -40,13 +40,14 @@ module.exports = {
      */
 
     // https://webpack.js.org/configuration/devtool/#development
-    devtool: 'cheap-module-eval-source-map',// 开发环境
+    // devtool: 'cheap-module-eval-source-map',// 开发环境
+    devtool: 'eval-source-map',
     // devtool: 'cheap-module-source-map',// 生产环境
 
     // If you have problems debugging vue-files in devtools,
     // set this to false - it *may* help
     // https://vue-loader.vuejs.org/en/options.html#cachebusting
-    cacheBusting: true,
+    cacheBusting: false,
 
     cssSourceMap: true
   },
