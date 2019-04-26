@@ -5,6 +5,7 @@ import Router from "vue-router";
 import TaskCreate from '@/components/content/taskCreate';
 import TaskProcessing from '@/components/content/TaskProcessing';
 import TaskReceive from '@/components/content/TaskReceive';
+import dynamicQuery from '@/components/content/dynamic-query';
 
 import handleWrite from '@/components/content/handleCase/write';
 import handleView from '@/components/content/handleCase/view';
@@ -27,6 +28,11 @@ export default new Router({
     mode: 'history',
     redirect: '/task-processing',
     routes: [
+        {
+            path: '/dynamic-query',
+            name: 'dynamic-query',
+            component: dynamicQuery
+        },
         {
             path: "/task-create",
             name: 'TaskCreate',
@@ -58,7 +64,6 @@ export default new Router({
             path: "/task-processing",
             name: "TaskProcessing",
             component: TaskProcessing
-
         },
         {
             path: "/task-receive",

@@ -66,10 +66,7 @@
         <div class="form-group">
           <label class="control-label">房屋坐落</label>
           <div class="down">
-            <input
-              type="text"
-              v-model="form.roomlocation"
-              disabled>
+            <input type="text" v-model="form.roomlocation" disabled>
             <button class="edit" @click="editRoom">修改</button>
           </div>
         </div>
@@ -142,12 +139,14 @@ export default {
       },
       ifmVisible: 0,
       appMan1ID: "",
+      oldAppMan1ID: "",
       appMan2ID: "",
+      oldAppMan2ID: "",
       oldHouseID: "",
-      newHouseID: '',
+      newHouseID: "",
       appMan1Type: "2",
       appMan2Type: "2",
-      houseType: '2'
+      houseType: "2"
     };
   },
   created() {
@@ -155,6 +154,18 @@ export default {
   },
   methods: {
     submit() {
+      if (this.oldAppMan1ID != this.appMan1ID) {
+        this.appMan1Type = "1";
+      }
+
+      if (this.oldAppMan2ID != this.appMan2ID) {
+        this.appMan2Type = "1";
+      }
+
+      if (this.oldHouseID != this.newHouseID) {
+        this.houseType = "1";
+      }
+
       let param = {
         casenum: this.$route.query.serialNO,
         appMan1Type: this.appMan1Type,
@@ -204,9 +215,11 @@ export default {
               if (res.data) {
                 // console.log(res.data);
                 this.appMan1ID = res.data.appMan1ID;
+                this.oldAppMan1ID = res.data.appMan1ID;
                 this.appMan2ID = res.data.appMan2ID;
+                this.oldAppMan2ID = res.data.appMan2ID;
                 this.oldHouseID = res.data.houseID;
-                this.newHouseID = res.data.houseID
+                this.newHouseID = res.data.houseID;
 
                 this.form.name = res.data.appMan1;
                 this.form.cardID = res.data.appMan1CardID;
@@ -249,32 +262,27 @@ export default {
     },
     // 获得选中的申请人信息
     getBuyerRowData(row) {
-      // console.log(row);
-      this.appMan1Type = '1'
-      this.appMan1ID = row.person_id
-      this.form.name = row.person_name
-      this.form.cardID = row.person_card_id
-      this.form.age = row.person_age
-      this.form.sex = row.person_sex
+      this.appMan1ID = row.person_id;
+      this.form.name = row.person_name;
+      this.form.cardID = row.person_card_id;
+      this.form.age = row.person_age;
+      this.form.sex = row.person_sex;
     },
     // 获得选中的户主信息
     getSellerRowData(row) {
-      // console.log(row)
-      this.appMan2Type = '1'
-      this.appMan2ID = row.person_id
-      this.form.headname = row.person_name
-      this.form.headcardid = row.person_card_id
-      this.form.headage = row.person_age
-      this.form.headsex = row.person_sex
+      this.appMan2ID = row.person_id;
+      this.form.headname = row.person_name;
+      this.form.headcardid = row.person_card_id;
+      this.form.headage = row.person_age;
+      this.form.headsex = row.person_sex;
     },
     // 获得选中的房屋信息
     getRoomRowData(row) {
-      this.houseType = '1'
-      this.newHouseID = row.house_id
-      this.form.roomlocation = row.house_location
-      this.form.roomaera = row.house_area
-      this.form.roommode = row.house_type
-      this.form.roomcard = row.house_card_num
+      this.newHouseID = row.house_id;
+      this.form.roomlocation = row.house_location;
+      this.form.roomaera = row.house_area;
+      this.form.roommode = row.house_type;
+      this.form.roomcard = row.house_card_num;
     }
   }
 };
