@@ -1,7 +1,13 @@
 <template>
   <div style="height: 100%;">
     <template v-if="dialogVisible">
-      <el-dialog title="登录" :close-on-click-modal="false" :visible.sync="dialogVisible" width="60%" :before-close="handleClose">
+      <el-dialog
+        title="登录"
+        :close-on-click-modal="false"
+        :visible.sync="dialogVisible"
+        width="60%"
+        :before-close="handleClose"
+      >
         <login @verifyLogin="verifyLogin"></login>
       </el-dialog>
     </template>
@@ -18,7 +24,8 @@
         <el-aside>
           <Menu ref="menu"></Menu>
         </el-aside>
-        <el-main>
+
+        <el-main class="main-container">
           <section class="main-wrapper">
             <p class="menu-name">{{menuItemName}}</p>
             <div class="menu-content-wrapper">
@@ -42,53 +49,52 @@ export default {
   },
   data() {
     return {
-      name: '',
+      name: "",
       dialogVisible: false
     };
   },
   computed: {
     menuItemName() {
-      return this.$store.state.moduleHead.menuItemName
+      return this.$store.state.moduleHead.menuItemName;
     }
   },
-  mounted() {
-  },
+  mounted() {},
   created() {
     this.isLogin();
     // this.$router.push('/')
-    this.$router.push('/task-processing?actType=2')
+    this.$router.push("/task-processing?actType=2");
     // this.$router.push('/task-create?actType=3')
   },
   methods: {
     // 改变侧边菜单栏的选中项
     defaultActive() {
-      this.$refs.menu.$refs.menu.$refs.menuWrapper.activeIndex = '/task-processing?actType=2'
+      this.$refs.menu.$refs.menu.$refs.menuWrapper.activeIndex =
+        "/task-processing?actType=2";
     },
     // 退出
     logout() {
-      this.$http.get(process.env.ROOT_API + 'login/loginOut')
-      .then(
+      this.$http.get(process.env.ROOT_API + "login/loginOut").then(
         res => {
-          res = JSON.parse(res.bodyText)
+          res = JSON.parse(res.bodyText);
           if (res.success) {
-            this.dialogVisible = true
+            this.dialogVisible = true;
           } else {
             this.$message.error("退出登录失败");
           }
         },
         err => {
           this.$message.error("退出登录失败");
-          throw new Error(err)
+          throw new Error(err);
         }
-      )
+      );
     },
     // 登录组件传过来的值 true/false
     verifyLogin(option) {
       if (!option.dialogVisible) {
-        this.name = option.name
-        this.$router.push('/task-processing?actType=2')
+        this.name = option.name;
+        this.$router.push("/task-processing?actType=2");
       }
-      this.dialogVisible = option.dialogVisible
+      this.dialogVisible = option.dialogVisible;
     },
     // 验证是否登录过
     isLogin() {
@@ -98,13 +104,13 @@ export default {
         )
         .then(
           res => {
-            res = JSON.parse(res.bodyText)
+            res = JSON.parse(res.bodyText);
             if (res.success) {
               this.$message({
                 type: "success",
                 message: "验证登陆成功"
               });
-              this.name = res.data
+              this.name = res.data;
               this.dialogVisible = false;
             } else {
               this.dialogVisible = true;
@@ -127,15 +133,19 @@ export default {
 .el-table::before {
   background: transparent !important;
 }
-.el-table__fixed-right::before, .el-table__fixed::before {
+.el-table__fixed-right::before,
+.el-table__fixed::before {
   background: transparent !important;
 }
 </style>
 
 <style lang="scss" scoped>
+.main-container {
+  padding: 0;
+}
 .el-container {
   height: 100%;
-  background: rgba(215, 215, 215, 1);
+  // background: rgba(215, 215, 215, 1);
   color: #333;
   .el-header {
     display: flex;

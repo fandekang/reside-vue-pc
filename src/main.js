@@ -11,6 +11,7 @@ import 'jquery';
 import 'font-awesome/css/font-awesome.css';
 
 import moduleHead from '@/assets/js/store/moduleHead';
+import dynamicQuery from '@/assets/js/store/dynamicQuery';
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
@@ -19,18 +20,19 @@ Vue.use(resource);
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
-  modules: {
-    moduleHead
-  }
+    modules: {
+        moduleHead,
+        dynamicQuery
+    }
 })
 
 /* eslint-disable no-new */
 new Vue({
-  el: "#app",
-  router,
-  store,
-  components: { App },
-  template: "<App/>"
+    el: "#app",
+    router,
+    store,
+    components: { App },
+    template: "<App/>"
 });
 
 // 路由 过滤器

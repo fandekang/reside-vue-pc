@@ -1,12 +1,7 @@
 <template>
-  <div>
-    <el-dialog title="提示" :visible.sync="dialogVisible" width="100%" :before-close="handleClose">
-      <span>这是一段信息</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-      </span>
-    </el-dialog>
+  <div class="container">
+    <div class="modal" v-show="dialogVisible"></div>
+      <condition-query class="condition-query-dialog" v-show="dialogVisible" @back="conditionDialogBack"></condition-query>
     <div class="btns-wrapper">
       <button class="btn" @click="openDialog">设置查询条件</button>
       <button class="btn">导出Excel</button>
@@ -16,18 +11,12 @@
   </div>
 </template>
 <script>
-// let arr1 = [
-//   {
-//     HOUSEHOUSE_AREA: 22,
-//     HOUSEHOUSE_DESC: "1",
-//     HOUSEHOUSE_DO_STATE: "1",
-//     HOUSEHOUSE_ID: "13",
-//     HOUSEHOUSE_LOCATION: "范德康家族睡衣",
-//     RECANDAPPFORMCASENUM: "2019000072",
-//     RECANDAPPFORMISRENT: "1"
-//   }
-// ];
+import conditionQuery from "@/components/content/dynamic-query/condition-query";
+
 export default {
+  components: {
+    conditionQuery
+  },
   data() {
     return {
       dialogVisible: false,
@@ -35,10 +24,11 @@ export default {
       columns: [],
       pager: {
         curPage: 1,
-        pageSizes: [5],
-        pageSize: 5
+        pageSizes: [5, 10],
+        pageSize: 10
       },
-      resData: null
+      resData: null,
+      
     };
   },
   created() {
@@ -57,10 +47,8 @@ export default {
   },
   methods: {
     openDialog() {
-        this.dialogVisible = true;
-    },
-    handleClose() {
-      this.dialogVisible = false;
+      // this.$store.commit('toggleConditionQueryVisible', {conditionQueryVisible: true})
+      this.dialogVisible = true;
     },
     // 格式化column
     resolveColumnName() {
@@ -99,20 +87,45 @@ export default {
       });
       //   console.log(jsonArr);
       this.dataJson = jsonArr;
+    },
+    conditionDialogBack() {
+      this.dialogVisible = false
     }
   }
 };
 </script>
 <style lang="scss" scoped>
-.btns-wrapper {
-  margin: 10px 0;
-  .btn {
-    padding: 6px 15px;
-    border: none;
-    outline: none;
-    background-color: rgba(242, 242, 242, 1);
-    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.349019607843137);
-    cursor: pointer;
+.container {
+  position: relative;
+  // display: flex;
+  // flex-direction: column;
+  height: 100%;
+  .condition-query-dialog {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 80%;
+    background: #fff;
+    z-index: 10;
+  }
+  .modal {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 9;
+    background: rgba(0, 0, 0, 0.5);
+  }
+  .btns-wrapper {
+    margin: 10px 0;
+    .btn {
+      padding: 6px 15px;
+      border: none;
+      outline: none;
+      background-color: rgba(242, 242, 242, 1);
+      box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.349019607843137);
+      cursor: pointer;
+    }
   }
 }
 </style>
